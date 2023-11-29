@@ -22,6 +22,13 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+    "click==8.1.7",
+    "fireo==2.2.1",
+]
+
+[project.scripts]
+fireframe = "fireframe.cli:cli"
 
 [project.urls]
 "Homepage" = "https://github.com/zachspar/fireframe"
