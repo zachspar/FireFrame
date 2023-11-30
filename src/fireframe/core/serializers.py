@@ -4,6 +4,7 @@ FireFrame Core Serializers.
 import inspect
 
 from pydantic import BaseModel as BaseSerialzer, create_model
+from pydantic.fields import FieldInfo
 
 from .models import Model
 
@@ -16,7 +17,15 @@ __all__ = [
 def _create_serializer_class(model_class, fields):
     class_name = f"{model_class.__name__}Serializer"
     class_attrs = {
-        attribute_name: (model_class.__annotations__[attribute_name], None)
+        attribute_name: (
+            model_class.__annotations__.get(attribute_name),
+            FieldInfo(
+                title=attribute_name,
+                default=None,
+                alias=attribute_name,
+                annotation=model_class.__annotations__.get(attribute_name),
+            ),
+        )
         for attribute_name, _ in inspect.getmembers(model_class)
         if attribute_name in model_class.__annotations__ and attribute_name in fields
     }
@@ -42,6 +51,11 @@ class ModelSerializer(BaseSerialzer):
         # Create the Pydantic serializer class
         cls._serializer_class = _create_serializer_class(cls.Meta.model, fields)
 
+        # create each field as an annotation
+        for field in fields:
+            cls.__annotations__[field] = cls._serializer_class.__annotations__[field]
+
+    @classmethod
     def from_model(cls, model: Model):
         if not isinstance(model, cls.Meta.model):
             raise TypeError(f"Model must be of type {cls.Meta.model}")
@@ -56,6 +70,7 @@ class ModelSerializer(BaseSerialzer):
 
         return serializer
 
+    @classmethod
     def to_model(cls, serializer: BaseSerialzer):
         if not isinstance(serializer, cls._serializer_class):
             raise TypeError(f"Serializer must be of type {cls._serializer_class}")

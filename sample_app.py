@@ -12,7 +12,7 @@ class User(Model):
     """
 
     class Meta:
-        collection_name = "users"
+        collection_name = "users_sample_collection"
 
     name: str
     email: str
