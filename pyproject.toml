@@ -25,6 +25,7 @@ classifiers = [
 dependencies = [
     "click==8.1.7",
     "fireo==2.2.1",
+    "pydantic==2.5.2",
 ]
 
 [project.scripts]
