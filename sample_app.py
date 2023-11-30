@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fireframe.core.api import *
 from fireframe.core.models import *
 from fireframe.core.serializers import *
 from fireframe.core.views import *
@@ -31,9 +31,28 @@ class UserSerializer(ModelSerializer):
         fields = ["name", "email", "age"]
 
 
-class UserGetAPI(BaseReadAPIView):
+class UserListAPI(BaseListAPIView):
     serializer_class = UserSerializer
 
 
-app = FastAPI(title="Sample FireFrame App", version="0.0.0")
-app.include_router(UserGetAPI.as_router())
+class UserRetrieveAPI(BaseRetrieveAPIView):
+    serializer_class = UserSerializer
+
+
+class UserCreateAPI(BaseCreateAPIView):
+    """"""
+
+    serializer_class = UserSerializer
+
+
+class UserDestroyAPI(BaseDestroyAPIView):
+    """"""
+
+    serializer_class = UserSerializer
+
+
+app = FireFrameAPI(title="Sample FireFrame App", version="0.0.0")
+app.include_router(UserListAPI.as_router())
+app.include_router(UserRetrieveAPI.as_router())
+# app.include_router(UserCreateAPI.as_router())
+app.include_router(UserDestroyAPI.as_router())
