@@ -40,7 +40,13 @@ class BaseAPIView(APIRouter):
 
 class BaseListAPIView(BaseAPIView):
     def _generate_routes(self):
-        self.add_api_route("/", self.list, response_model=List[self.serializer_class], methods=["GET"])
+        self.add_api_route(
+            "/",
+            self.list,
+            name=f"List {self.serializer_class.Meta.model.__name__} View",
+            response_model=List[self.serializer_class],
+            methods=["GET"],
+        )
 
     async def list(self):
         """
@@ -57,7 +63,13 @@ class BaseListAPIView(BaseAPIView):
 
 class BaseRetrieveAPIView(BaseAPIView):
     def _generate_routes(self):
-        self.add_api_route("/{id}", self.retrieve, response_model=self.serializer_class, methods=["GET"])
+        self.add_api_route(
+            "/{id}",
+            self.retrieve,
+            name=f"Retrieve {self.serializer_class.Meta.model.__name__} View",
+            response_model=self.serializer_class,
+            methods=["GET"],
+        )
 
     async def retrieve(self, id: str):
         """
@@ -81,7 +93,13 @@ class BaseCreateAPIView(BaseAPIView):
     def _generate_routes(self):
         # NOTE: annotations hack to add type annotations to the create function dynamically
         self.create.__annotations__["serializer_data"] = self.serializer_class
-        self.add_api_route("/", self.create, response_model=self.serializer_class, methods=["POST"])
+        self.add_api_route(
+            "/",
+            self.create,
+            name=f"Create {self.serializer_class.Meta.model.__name__} View",
+            response_model=self.serializer_class,
+            methods=["POST"],
+        )
 
     async def create(self, serializer_data):
         """
@@ -103,7 +121,13 @@ class BaseUpdateAPIView(BaseAPIView):
     def _generate_routes(self):
         # NOTE: annotations hack to add type annotations to the update function dynamically
         self.update.__annotations__["serializer_data"] = self.serializer_class
-        self.add_api_route("/{id}", self.update, response_model=self.serializer_class, methods=["PUT"])
+        self.add_api_route(
+            "/{id}",
+            self.update,
+            name=f"Update {self.serializer_class.Meta.model.__name__} View",
+            response_model=self.serializer_class,
+            methods=["PUT"],
+        )
 
     async def update(self, id: str, serializer_data):  # TODO FIXME serializer_data: self.serializer_class
         """
@@ -132,7 +156,9 @@ class BaseUpdateAPIView(BaseAPIView):
 
 class BaseDestroyAPIView(BaseAPIView):
     def _generate_routes(self):
-        self.add_api_route("/{id}", self.destroy, methods=["DELETE"])
+        self.add_api_route(
+            "/{id}", self.destroy, name=f"Destroy {self.serializer_class.Meta.model.__name__} View", methods=["DELETE"]
+        )
 
     async def destroy(self, id: str) -> None:
         """
