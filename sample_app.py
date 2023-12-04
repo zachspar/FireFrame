@@ -1,8 +1,8 @@
 """A sample FireFrame API."""
-from fireframe.core.api import *
-from fireframe.core.models import *
-from fireframe.core.serializers import *
-from fireframe.core.views import *
+from fireframe.core.api import FireFrameAPI
+from fireframe.core.mixins import CrudMixin
+from fireframe.core.models import Model
+from fireframe.core.serializers import ModelSerializer
 
 
 class User(Model):
@@ -32,29 +32,11 @@ class UserSerializer(ModelSerializer):
         fields = ["name", "email", "age"]
 
 
-class UserListAPI(BaseListAPIView):
-    serializer_class = UserSerializer
-
-
-class UserRetrieveAPI(BaseRetrieveAPIView):
-    serializer_class = UserSerializer
-
-
-class UserCreateAPI(BaseCreateAPIView):
-    serializer_class = UserSerializer
-
-
-class UserUpdateAPI(BaseUpdateAPIView):
-    serializer_class = UserSerializer
-
-
-class UserDestroyAPI(BaseDestroyAPIView):
+class UserCrudAPI(CrudMixin):
     serializer_class = UserSerializer
 
 
 app = FireFrameAPI(title="Sample FireFrame App", version="0.0.0")
-app.include_router(UserListAPI.as_router())
-app.include_router(UserRetrieveAPI.as_router())
-app.include_router(UserCreateAPI.as_router())
-app.include_router(UserUpdateAPI.as_router())
-app.include_router(UserDestroyAPI.as_router())
+
+# routes from mixin
+app.include_router(UserCrudAPI.as_router(), tags=["Users"])

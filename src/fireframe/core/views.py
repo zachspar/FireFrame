@@ -9,6 +9,7 @@ from fireo.queries.errors import ReferenceDocNotExist
 from .serializers import ModelSerializer
 
 __all__ = [
+    "BaseAPIView",
     "BaseListAPIView",
     "BaseRetrieveAPIView",
     "BaseCreateAPIView",
