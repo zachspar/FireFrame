@@ -76,17 +76,6 @@ class BaseRetrieveAPIView(BaseAPIView):
         return serialized_data
 
 
-class CreateUpdateAPIViewDynamicTypingMeta(type):
-    def __new__(cls, name, bases, dct):
-        serializer_class = dct.get("serializer_class")
-        if serializer_class:
-            for name, attr in dct.items():
-                if callable(attr):
-                    attr.__annotations__ = serializer_class.model_fields
-                dct[name] = attr
-        return super().__new__(cls, name, bases, dct)
-
-
 class BaseCreateAPIView(BaseAPIView):
     def _generate_routes(self):
         # NOTE: annotations hack to add type annotations to the create function dynamically
@@ -109,7 +98,7 @@ class BaseCreateAPIView(BaseAPIView):
         return serialized_data
 
 
-class BaseUpdateAPIView(BaseAPIView, metaclass=CreateUpdateAPIViewDynamicTypingMeta):
+class BaseUpdateAPIView(BaseAPIView):
     def _generate_routes(self):
         # NOTE: annotations hack to add type annotations to the update function dynamically
         self.update.__annotations__["serializer_data"] = self.serializer_class
