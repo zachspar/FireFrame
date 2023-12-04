@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61.0",]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "FireFrame"
+version = "0.0.0-alpha.5"
+authors = [
+  { name="Zachary Spar", email="zachspar@gmail.com" },
+]
+description = "A firebase python web framework with ORM support."
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "click==8.1.7",
+    "fastapi==0.104.1",
+    "fireo==2.2.1",
+    "pydantic==2.5.2",
+]
+
+[project.scripts]
+fireframe = "fireframe.cli:cli"
+
+[project.urls]
+"Homepage" = "https://github.com/zachspar/fireframe"
+"Bug Tracker" = "https://github.com/zachspar/fireframe/issues"
