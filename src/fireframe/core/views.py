@@ -46,6 +46,7 @@ class BaseListAPIView(BaseAPIView):
             name=f"List {self.serializer_class.Meta.model.__name__} View",
             response_model=List[self.serializer_class],
             methods=["GET"],
+            status_code=200,
         )
 
     async def list(self):
@@ -69,6 +70,7 @@ class BaseRetrieveAPIView(BaseAPIView):
             name=f"Retrieve {self.serializer_class.Meta.model.__name__} View",
             response_model=self.serializer_class,
             methods=["GET"],
+            status_code=200,
         )
 
     async def retrieve(self, id: str):
@@ -99,6 +101,7 @@ class BaseCreateAPIView(BaseAPIView):
             name=f"Create {self.serializer_class.Meta.model.__name__} View",
             response_model=self.serializer_class,
             methods=["POST"],
+            status_code=201,
         )
 
     async def create(self, serializer_data):
@@ -127,6 +130,7 @@ class BaseUpdateAPIView(BaseAPIView):
             name=f"Update {self.serializer_class.Meta.model.__name__} View",
             response_model=self.serializer_class,
             methods=["PUT"],
+            status_code=200,
         )
 
     async def update(self, id: str, serializer_data):  # TODO FIXME serializer_data: self.serializer_class
@@ -157,7 +161,11 @@ class BaseUpdateAPIView(BaseAPIView):
 class BaseDestroyAPIView(BaseAPIView):
     def _generate_routes(self):
         self.add_api_route(
-            "/{id}", self.destroy, name=f"Destroy {self.serializer_class.Meta.model.__name__} View", methods=["DELETE"]
+            "/{id}",
+            self.destroy,
+            name=f"Destroy {self.serializer_class.Meta.model.__name__} View",
+            methods=["DELETE"],
+            status_code=204,
         )
 
     async def destroy(self, id: str) -> None:
