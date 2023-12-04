@@ -12,6 +12,7 @@ __all__ = [
     "BaseListAPIView",
     "BaseRetrieveAPIView",
     "BaseCreateAPIView",
+    "BaseUpdateAPIView",
     "BaseDestroyAPIView",
 ]
 
@@ -75,11 +76,24 @@ class BaseRetrieveAPIView(BaseAPIView):
         return serialized_data
 
 
+class CreateUpdateAPIViewDynamicTypingMeta(type):
+    def __new__(cls, name, bases, dct):
+        serializer_class = dct.get("serializer_class")
+        if serializer_class:
+            for name, attr in dct.items():
+                if callable(attr):
+                    attr.__annotations__ = serializer_class.model_fields
+                dct[name] = attr
+        return super().__new__(cls, name, bases, dct)
+
+
 class BaseCreateAPIView(BaseAPIView):
     def _generate_routes(self):
+        # NOTE: annotations hack to add type annotations to the create function dynamically
+        self.create.__annotations__["serializer_data"] = self.serializer_class
         self.add_api_route("/", self.create, response_model=self.serializer_class, methods=["POST"])
 
-    async def create(self, serializer_data):  # TODO FIXME serializer_data: self.serializer_class
+    async def create(self, serializer_data):
         """
         Create a new model object.
         """
@@ -95,8 +109,10 @@ class BaseCreateAPIView(BaseAPIView):
         return serialized_data
 
 
-class BaseUpdateAPIView(BaseAPIView):
+class BaseUpdateAPIView(BaseAPIView, metaclass=CreateUpdateAPIViewDynamicTypingMeta):
     def _generate_routes(self):
+        # NOTE: annotations hack to add type annotations to the update function dynamically
+        self.update.__annotations__["serializer_data"] = self.serializer_class
         self.add_api_route("/{id}", self.update, response_model=self.serializer_class, methods=["PUT"])
 
     async def update(self, id: str, serializer_data):  # TODO FIXME serializer_data: self.serializer_class

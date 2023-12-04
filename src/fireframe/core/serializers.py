@@ -72,7 +72,7 @@ class ModelSerializer(BaseSerialzer):
 
     @classmethod
     def to_model(cls, serializer: BaseSerialzer):
-        if not isinstance(serializer, cls._serializer_class):
+        if not isinstance(serializer, cls._serializer_class) and not issubclass(type(serializer), ModelSerializer):
             raise TypeError(f"Serializer must be of type {cls._serializer_class}")
 
         # Create a new model instance

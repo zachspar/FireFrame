@@ -1,3 +1,4 @@
+"""A sample FireFrame API."""
 from fireframe.core.api import *
 from fireframe.core.models import *
 from fireframe.core.serializers import *
@@ -40,19 +41,20 @@ class UserRetrieveAPI(BaseRetrieveAPIView):
 
 
 class UserCreateAPI(BaseCreateAPIView):
-    """"""
+    serializer_class = UserSerializer
 
+
+class UserUpdateAPI(BaseUpdateAPIView):
     serializer_class = UserSerializer
 
 
 class UserDestroyAPI(BaseDestroyAPIView):
-    """"""
-
     serializer_class = UserSerializer
 
 
 app = FireFrameAPI(title="Sample FireFrame App", version="0.0.0")
 app.include_router(UserListAPI.as_router())
 app.include_router(UserRetrieveAPI.as_router())
-# app.include_router(UserCreateAPI.as_router())
+app.include_router(UserCreateAPI.as_router())
+app.include_router(UserUpdateAPI.as_router())
 app.include_router(UserDestroyAPI.as_router())
