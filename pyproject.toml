@@ -4,21 +4,21 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "FireFrame"
-version = "0.0.0-alpha.7"
+version = "0.0.0-alpha.8"
 authors = [
   { name="Zachary Spar", email="zachspar@gmail.com" },
 ]
 description = "A firebase python web framework with ORM support."
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.7"
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Developers",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
 ]
@@ -27,6 +27,16 @@ dependencies = [
     "fastapi==0.104.1",
     "fireo==2.2.1",
     "pydantic==2.5.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black==23.11.0",
+    "build==1.0.3",
+    "httpx==0.25.2",
+    "pytest==7.4.3",
+    "pytest-xdist==3.5.0",
+    "twine==4.0.2",
 ]
 
 [project.scripts]
