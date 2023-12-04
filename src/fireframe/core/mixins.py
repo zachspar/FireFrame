@@ -6,7 +6,7 @@ from .views import *
 
 
 __all__ = [
-    "CrudMixin",
+    "crud_router",
 ]
 
 
@@ -16,33 +16,23 @@ class BaseAPIViewSet(BaseAPIView):
     """
 
 
-class CrudMixin(BaseAPIViewSet):
-    """
-    Mixin for CRUD operations.
-    """
+def crud_router(input_serializer_class):
+    router = APIRouter()
 
-    @classmethod
-    def as_router(cls):
-        """
-        Instantiate a new router with CRUD views and return the router.
-        """
-        router = APIRouter()
+    class CreateView(BaseCreateAPIView):
+        serializer_class = input_serializer_class
 
-        class CreateView(BaseCreateAPIView):
-            serializer_class = cls.serializer_class
+    class RetrieveView(BaseRetrieveAPIView):
+        serializer_class = input_serializer_class
 
-        class RetrieveView(BaseRetrieveAPIView):
-            serializer_class = cls.serializer_class
+    class UpdateView(BaseUpdateAPIView):
+        serializer_class = input_serializer_class
 
-        class UpdateView(BaseUpdateAPIView):
-            serializer_class = cls.serializer_class
+    class DestroyView(BaseDestroyAPIView):
+        serializer_class = input_serializer_class
 
-        class DestroyView(BaseDestroyAPIView):
-            serializer_class = cls.serializer_class
-
-        router.include_router(CreateView.as_router())
-        router.include_router(RetrieveView.as_router())
-        router.include_router(UpdateView.as_router())
-        router.include_router(DestroyView.as_router())
-
-        return router
+    router.include_router(CreateView.as_router())
+    router.include_router(RetrieveView.as_router())
+    router.include_router(UpdateView.as_router())
+    router.include_router(DestroyView.as_router())
+    return router
