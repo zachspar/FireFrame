@@ -29,13 +29,6 @@ class BaseAPIView(APIRouter):
             raise TypeError("serializer_class must be a subclass of ModelSerializer")
         self._generate_routes()
 
-    @classmethod
-    def as_router(cls):
-        """
-        Instantiate the view and return the router.
-        """
-        return cls()
-
 
 class BaseListAPIView(BaseAPIView):
     def _generate_routes(self):
@@ -56,7 +49,7 @@ class BaseListAPIView(BaseAPIView):
         objects = self.serializer_class.Meta.model.collection.fetch()
 
         # Serialize the objects
-        serialized_data = [self.serializer_class.from_model(obj).model_dump() for obj in objects]
+        serialized_data = [self.serializer_class(**obj.to_dict()).model_dump() for obj in objects]
 
         return serialized_data
 
@@ -85,9 +78,9 @@ class BaseRetrieveAPIView(BaseAPIView):
             raise HTTPException(status_code=404, detail=f"{self.serializer_class.Meta.model.__name__} not found.")
 
         # Serialize the object
-        serialized_data = self.serializer_class.from_model(obj).model_dump()
+        serializer = self.serializer_class(**obj.to_dict())
 
-        return serialized_data
+        return serializer.model_dump()
 
 
 class BaseCreateAPIView(BaseAPIView):
@@ -103,20 +96,17 @@ class BaseCreateAPIView(BaseAPIView):
             status_code=201,
         )
 
-    async def create(self, serializer_data):
+    async def create(self, serializer_data: ModelSerializer):
         """
         Create a new model object.
         """
         # Convert the serializer to a model instance
-        model = self.serializer_class.to_model(serializer_data)
+        model = serializer_data.to_model()
 
         # Save the model instance
         model.save()
 
-        # Serialize the model instance
-        serialized_data = self.serializer_class.from_model(model).model_dump()
-
-        return serialized_data
+        return serializer_data.model_dump()
 
 
 class BaseUpdateAPIView(BaseAPIView):
@@ -151,10 +141,7 @@ class BaseUpdateAPIView(BaseAPIView):
         # save the object
         obj.save(merge=True)
 
-        # Serialize the model instance
-        serialized_data = self.serializer_class.from_model(obj).model_dump()
-
-        return serialized_data
+        return self.serializer_class(**obj.to_dict()).model_dump()
 
 
 class BaseDestroyAPIView(BaseAPIView):

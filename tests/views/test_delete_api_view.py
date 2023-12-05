@@ -6,10 +6,9 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 from fireframe.core.api import FireFrameAPI
-from fireframe.core.models import Model
 from fireframe.core.serializers import ModelSerializer
 from fireframe.core.views import BaseDestroyAPIView
-from ._fixtures import test_thread
+from ._fixtures import test_model_primitive_1
 
 
 class TestDestroyAPIView:
@@ -25,39 +24,22 @@ class TestDestroyAPIView:
         with pytest.raises(TypeError):
             TestBadView()
 
-    @pytest.fixture(scope="function")
-    def _TestModel(self, test_thread) -> Model:
-        """
-        Cleanup the test collection after the test is done.
-        """
-
-        class TestModel(Model):
-            example: str
-
-            class Meta:
-                collection_name = f"test_collection_example_{test_thread}"
-
-        yield TestModel
-
-        # cleanup test collection
-        TestModel.collection.delete_every(child=True)
-
-    def test_destroy_view_ok(self, test_thread: str, _TestModel: Model):
+    def test_destroy_view_ok(self, test_model_primitive_1):
         """
         Test the BaseDestroyAPIView works as expected.
         """
 
-        class TestSerializer(ModelSerializer):
+        class TestDestroySerializer(ModelSerializer):
             class Meta:
-                model = _TestModel
+                model = test_model_primitive_1
                 fields = ["example"]
 
         class TestDestroyView(BaseDestroyAPIView):
-            serializer_class = TestSerializer
+            serializer_class = TestDestroySerializer
 
-        instance_id: str = _TestModel(example=f"This is a test from test_destroy_view_ok method").save().id
+        instance_id: str = test_model_primitive_1(example=f"This is a test from test_destroy_view_ok method").save().id
         app = FireFrameAPI()
-        app.include_router(TestDestroyView.as_router())
+        app.include_router(TestDestroyView())
         client = TestClient(app)
 
         # delete instance using API
@@ -73,4 +55,4 @@ class TestDestroyAPIView:
             response.json()
 
         # ensure instance is deleted from database
-        assert _TestModel.collection.get(instance_id) is None
+        assert test_model_primitive_1.collection.get(instance_id) is None

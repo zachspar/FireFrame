@@ -1,6 +1,6 @@
 """A sample FireFrame API."""
 from fireframe.core.api import FireFrameAPI
-from fireframe.core.mixins import crud_router
+from fireframe.core.viewsets import crud_viewset
 from fireframe.core.models import Model
 from fireframe.core.serializers import ModelSerializer
 
@@ -63,5 +63,5 @@ class ItemSerializer(ModelSerializer):
 app = FireFrameAPI(title="Sample FireFrame App", version="0.0.0")
 
 # routes from mixin
-app.include_router(crud_router(UserSerializer), tags=["Users"], prefix="/users")
-app.include_router(crud_router(ItemSerializer), tags=["Items"], prefix="/items")
+app.include_router(crud_viewset(UserSerializer), tags=["Users"], prefix="/users")
+app.include_router(crud_viewset(ItemSerializer), tags=["Items"], prefix="/items")

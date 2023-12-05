@@ -6,17 +6,11 @@ from fastapi import APIRouter
 from .views import *
 
 __all__ = [
-    "crud_router",
+    "crud_viewset",
 ]
 
 
-class BaseAPIViewSet(BaseAPIView):
-    """
-    Base viewset.
-    """
-
-
-def crud_router(input_serializer_class):
+def crud_viewset(input_serializer_class):
     router = APIRouter()
 
     class CreateView(BaseCreateAPIView):
@@ -31,8 +25,8 @@ def crud_router(input_serializer_class):
     class DestroyView(BaseDestroyAPIView):
         serializer_class = input_serializer_class
 
-    router.include_router(CreateView.as_router())
-    router.include_router(RetrieveView.as_router())
-    router.include_router(UpdateView.as_router())
-    router.include_router(DestroyView.as_router())
+    router.include_router(CreateView())
+    router.include_router(RetrieveView())
+    router.include_router(UpdateView())
+    router.include_router(DestroyView())
     return router

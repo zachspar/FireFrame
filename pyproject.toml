@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "FireFrame"
-version = "0.0.0-alpha.8"
+version = "0.0.0-alpha.9"
 authors = [
   { name="Zachary Spar", email="zachspar@gmail.com" },
 ]
@@ -14,7 +14,6 @@ requires-python = ">=3.7"
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Developers",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -36,7 +35,13 @@ dev = [
     "httpx==0.25.2",
     "pytest==7.4.3",
     "pytest-xdist==3.5.0",
+    "tox==4.11.4",
     "twine==4.0.2",
+    "uvicorn==0.24.0.post1",
+]
+test = [
+    "httpx==0.25.2",
+    "pytest==7.4.3",
 ]
 
 [project.scripts]
