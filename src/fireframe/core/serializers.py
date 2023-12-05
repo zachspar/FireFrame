@@ -5,9 +5,7 @@ import inspect
 
 from pydantic import BaseModel as BaseSerialzer, create_model
 from pydantic.fields import FieldInfo
-
 from .models import Model
-
 
 __all__ = [
     "ModelSerializer",

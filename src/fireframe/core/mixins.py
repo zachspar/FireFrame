@@ -2,8 +2,8 @@
 Commonly used FireFrame mixins.
 """
 from fastapi import APIRouter
-from .views import *
 
+from .views import *
 
 __all__ = [
     "crud_router",
