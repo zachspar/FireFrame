@@ -24,9 +24,10 @@ class TestRetrieveAPIView:
         with pytest.raises(TypeError):
             TestBadView()
 
-    def test_retrieve_view_ok(self, test_thread):
+    @pytest.fixture(scope="function")
+    def _TestModel(self, test_thread) -> Model:
         """
-        Test the BaseRetrieveAPIView works as expected.
+        Cleanup the test collection after the test is done.
         """
 
         class TestModel(Model):
@@ -35,21 +36,28 @@ class TestRetrieveAPIView:
             class Meta:
                 collection_name = f"test_collection_example_{test_thread}"
 
+        yield TestModel
+
+        # cleanup test collection
+        TestModel.collection.delete_every(child=True)
+
+    def test_retrieve_view_ok(self, test_thread, _TestModel):
+        """
+        Test the BaseRetrieveAPIView works as expected.
+        """
+
         class TestSerializer(ModelSerializer):
             class Meta:
-                model = TestModel
+                model = _TestModel
                 fields = ["example"]
 
         class TestRetrieveView(BaseRetrieveAPIView):
             serializer_class = TestSerializer
 
-        instance_id: str = TestModel(example="This is a test").save().id
+        instance_id: str = _TestModel(example="This is a test").save().id
         app = FireFrameAPI()
         app.include_router(TestRetrieveView.as_router())
         client = TestClient(app)
         response = client.get(f"/{instance_id}")
         assert response.status_code == 200
         assert response.json() == {"example": "This is a test"}
-
-        # cleanup test collection
-        TestModel.collection.delete_every(child=True)

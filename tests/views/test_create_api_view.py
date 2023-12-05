@@ -24,9 +24,10 @@ class TestCreateAPIView:
         with pytest.raises(TypeError):
             TestBadView()
 
-    def test_create_view_ok(self, test_thread):
+    @pytest.fixture(scope="function")
+    def _TestModel(self, test_thread) -> Model:
         """
-        Test the BaseCreateAPIView works as expected.
+        Cleanup the test collection after the test is done.
         """
 
         class TestModel(Model):
@@ -37,9 +38,19 @@ class TestCreateAPIView:
             class Meta:
                 collection_name = f"test_collection_example_{test_thread}"
 
+        yield TestModel
+
+        # cleanup test collection
+        TestModel.collection.delete_every(child=True)
+
+    def test_create_view_ok(self, test_thread, _TestModel):
+        """
+        Test the BaseCreateAPIView works as expected.
+        """
+
         class TestSerializer(ModelSerializer):
             class Meta:
-                model = TestModel
+                model = _TestModel
                 fields = ["example", "flag", "price"]
 
         class TestCreateView(BaseCreateAPIView):
@@ -57,6 +68,3 @@ class TestCreateAPIView:
             "flag": True,
             "price": 10.0,
         }
-
-        # cleanup test collection
-        TestModel.collection.delete_every(child=True)

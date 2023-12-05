@@ -24,9 +24,10 @@ class TestListAPIView:
         with pytest.raises(TypeError):
             TestBadView()
 
-    def test_list_view_ok(self, test_thread):
+    @pytest.fixture(scope="function")
+    def _TestModel(self, test_thread) -> Model:
         """
-        Test the BaseListAPIView works as expected.
+        Cleanup the test collection after the test is done.
         """
 
         class TestModel(Model):
@@ -35,15 +36,25 @@ class TestListAPIView:
             class Meta:
                 collection_name = f"test_collection_example_{test_thread}"
 
+        yield TestModel
+
+        # cleanup test collection
+        TestModel.collection.delete_every(child=True)
+
+    def test_list_view_ok(self, test_thread: str, _TestModel: Model):
+        """
+        Test the BaseListAPIView works as expected.
+        """
+
         class TestSerializer(ModelSerializer):
             class Meta:
-                model = TestModel
+                model = _TestModel
                 fields = ["example"]
 
         class TestListView(BaseListAPIView):
             serializer_class = TestSerializer
 
-        TestModel(example=f"This is a test from test_list_view_ok method").save()
+        _TestModel(example=f"This is a test from test_list_view_ok method").save()
         app = FireFrameAPI()
         app.include_router(TestListView.as_router())
         client = TestClient(app)
@@ -52,11 +63,8 @@ class TestListAPIView:
         assert response.json() == [{"example": "This is a test from test_list_view_ok method"}]
 
         for i in range(10):
-            TestModel(example=f"This is a test from test_list_view_ok method").save()
+            _TestModel(example=f"This is a test from test_list_view_ok method").save()
         response = client.get("/")
         assert response.status_code == 200
         correct_list = [{"example": "This is a test from test_list_view_ok method"} for _ in range(11)]
         assert response.json() == correct_list
-
-        # cleanup test collection
-        TestModel.collection.delete_every(child=True)

@@ -1,25 +1,23 @@
 """
-Test the BaseDestroyAPIView class.
+Test the BaseUpdateAPIView class.
 """
-import json
-
 import pytest
 from fastapi.testclient import TestClient
 from fireframe.core.api import FireFrameAPI
 from fireframe.core.models import Model
 from fireframe.core.serializers import ModelSerializer
-from fireframe.core.views import BaseDestroyAPIView
+from fireframe.core.views import BaseUpdateAPIView
 from ._fixtures import test_thread
 
 
-class TestDestroyAPIView:
+class TestUpdateAPIView:
     def test_view_no_serializer(self):
         """
-        Test the BaseDestroyAPIView raises TypeError when
+        Test the BaseUpdateAPIView raises TypeError when
         serializer_class is not a subclass of ModelSerializer.
         """
 
-        class TestBadView(BaseDestroyAPIView):
+        class TestBadView(BaseUpdateAPIView):
             pass
 
         with pytest.raises(TypeError):
@@ -42,9 +40,9 @@ class TestDestroyAPIView:
         # cleanup test collection
         TestModel.collection.delete_every(child=True)
 
-    def test_destroy_view_ok(self, test_thread: str, _TestModel: Model):
+    def test_update_view_ok(self, test_thread, _TestModel):
         """
-        Test the BaseDestroyAPIView works as expected.
+        Test the BaseUpdateAPIView works as expected.
         """
 
         class TestSerializer(ModelSerializer):
@@ -52,25 +50,14 @@ class TestDestroyAPIView:
                 model = _TestModel
                 fields = ["example"]
 
-        class TestDestroyView(BaseDestroyAPIView):
+        class TestUpdateView(BaseUpdateAPIView):
             serializer_class = TestSerializer
 
-        instance_id: str = _TestModel(example=f"This is a test from test_destroy_view_ok method").save().id
+        instance_id: str = _TestModel(example=f"This is a test from test_update_view_ok method").save().id
         app = FireFrameAPI()
-        app.include_router(TestDestroyView.as_router())
+        app.include_router(TestUpdateView.as_router())
         client = TestClient(app)
-
-        # delete instance using API
-        response = client.delete(f"/{instance_id}")
-        assert response.status_code == 204
-        with pytest.raises(json.decoder.JSONDecodeError):
-            response.json()
-
-        # ensure same response again
-        response = client.delete(f"/{instance_id}")
-        assert response.status_code == 204
-        with pytest.raises(json.decoder.JSONDecodeError):
-            response.json()
-
-        # ensure instance is deleted from database
-        assert _TestModel.collection.get(instance_id) is None
+        response = client.put(f"/{instance_id}", json={"example": "This is a test from test_update_view_ok method"})
+        assert response.status_code == 200
+        assert response.json() == {"example": "This is a test from test_update_view_ok method"}
+        assert _TestModel.collection.get(instance_id).example == "This is a test from test_update_view_ok method"

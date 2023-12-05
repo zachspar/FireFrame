@@ -4,6 +4,7 @@ import pytest
 
 __all__ = [
     "test_thread",
+    "test_model_cleanup",
 ]
 
 
@@ -14,3 +15,10 @@ def test_thread() -> str:
     """
     test_thread = uuid4()
     yield str(test_thread)
+
+
+@pytest.fixture(scope="module")
+def test_model_cleanup():
+    """
+    Cleanup test collections after each test.
+    """
