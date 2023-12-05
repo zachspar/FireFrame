@@ -10,7 +10,7 @@ authors = [
 ]
 description = "A firebase python web framework with ORM support."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Developers",
