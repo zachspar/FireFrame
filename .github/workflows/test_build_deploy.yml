@@ -30,5 +30,6 @@ jobs:
     - name: Test with tox
       env:
         GOOGLE_CLOUD_PROJECT: ${{ secrets.FIREBASE_TEST_PROJECT_ID }}
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.credentials.outputs.GOOGLE_APPLICATION_CREDENTIALS }}
-      run: tox
+      run: |
+        export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_GHA_CREDS_PATH
+        tox
