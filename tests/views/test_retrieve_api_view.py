@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from fireframe.core.api import FireFrameAPI
 from fireframe.core.serializers import ModelSerializer
 from fireframe.core.views import BaseRetrieveAPIView
-from ._fixtures import test_model_primitive_1
+from ._fixtures import test_model_primitive_1, test_thread
 
 
 class TestRetrieveAPIView:
