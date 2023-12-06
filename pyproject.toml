@@ -43,6 +43,7 @@ test = [
     "httpx==0.25.2",
     "pytest==7.4.3",
     "pytest-xdist==3.5.0",
+    "tox==4.11.4",
 ]
 
 [project.scripts]
