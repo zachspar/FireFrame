@@ -12,7 +12,7 @@ def project_cli(ctx):
 
 @project_cli.command()
 @click.argument("name", required=True, type=str)
-@click.option("--path", "-p", type=click.Path())
+@click.option("--path", "-p", type=click.Path(), help="The path to create the project in.")
 @click.pass_context
 def create(ctx, name: str, path):
     """
@@ -71,9 +71,12 @@ def create(ctx, name: str, path):
 
 
 @project_cli.command()
-@click.option("--port", "-p", type=int, default=8000)
+@click.option(
+    "--entrypoint", "-e", type=str, default="main:app", help="The entrypoint of the project as specified by uvicorn."
+)
+@click.option("--port", "-p", type=int, default=8000, help="The port to run the project on.")
 @click.pass_context
-def serve(ctx, port: int):
+def serve(ctx, entrypoint: str, port: int):
     """
     Run the FireFrame project.
     """
@@ -86,9 +89,12 @@ def serve(ctx, port: int):
         os.system("pip install uvicorn")
 
     # check if the project has a main.py file
-    if not os.path.exists(os.path.join(os.getcwd(), "main.py")):
+    if not os.path.exists(os.path.join(os.getcwd(), f"{entrypoint.split(':')[0]}.py")):
         click.echo("No main.py file found. Please run this command from the root directory of your project.")
+        click.echo(
+            "If you have renamed your main.py file, please specify the new entrypoint with the --entrypoint flag."
+        )
         return
 
     # run the project with uvicorn in background
-    os.system(f"uvicorn main:app --reload --port {port} --host '0.0.0.0'")
+    os.system(f"uvicorn {entrypoint} --reload --port {port} --host '0.0.0.0'")
