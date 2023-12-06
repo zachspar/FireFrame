@@ -17,7 +17,7 @@ jobs:
       with:
         version: '23.11.0'
         src: './'
-        options: '--line-length --check'
+        options: '--line-length 120 --check'
   Test:
     needs: Lint
     runs-on: ubuntu-latest
