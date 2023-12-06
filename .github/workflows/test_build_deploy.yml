@@ -9,7 +9,16 @@ on:
 env:
   PROJECT_ID: ${{ secrets.FIREBASE_TEST_PROJECT_ID }}
 jobs:
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: 'actions/checkout@v4'
+    - uses: 'psf/black@stable'
+      with:
+        version: '23.11.0'
+        args: '--line-length --check .'
   Test:
+    needs: Lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
