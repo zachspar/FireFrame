@@ -1,5 +1,6 @@
 """A sample FireFrame API."""
 from fireframe.core.api import FireFrameAPI
+from fireframe.core.views import BaseListAPIView
 from fireframe.core.viewsets import crud_viewset
 from fireframe.core.models import Model
 from fireframe.core.serializers import ModelSerializer
@@ -60,8 +61,30 @@ class ItemSerializer(ModelSerializer):
         fields = ["name", "price", "is_offer", "stock"]
 
 
+class ItemListView(BaseListAPIView):
+    """
+    Item list view.
+
+    Inherits from FireFrame's BaseListAPIView.
+    """
+
+    serializer_class = ItemSerializer
+
+
+class UserListView(BaseListAPIView):
+    """
+    User list view.
+
+    Inherits from FireFrame's BaseListAPIView.
+    """
+
+    serializer_class = UserSerializer
+
+
 app = FireFrameAPI(title="Sample FireFrame App", version="0.0.0")
 
-# routes from mixin
+# include routes from viewsets and views
 app.include_router(crud_viewset(UserSerializer), tags=["Users"], prefix="/users")
+app.include_router(UserListView(), tags=["Users"], prefix="/users")
 app.include_router(crud_viewset(ItemSerializer), tags=["Items"], prefix="/items")
+app.include_router(ItemListView(), tags=["Items"], prefix="/items")
